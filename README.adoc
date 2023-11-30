@@ -1,0 +1,104 @@
+= Sidekiq::Antidote
+
+
+== Installation
+
+Add this line to your application's Gemfile:
+
+    $ bundle add sidekiq-antidote
+
+Or install it yourself as:
+
+    $ gem install sidekiq-antidote
+
+
+== Usage
+
+[source, ruby]
+----
+require "sidekiq"
+require "sidekiq/antidote"
+
+Sidekiq::Antidote.configure do |config|
+  # Set redis key prefix.
+  # Default: nil
+  config.key_prefix = "my-app:"
+
+  # Set inhibitors cache refresh rate in seconds.
+  # Default: 10.0
+  config.refresh_rate = 15.0
+end
+----
+
+When running in forked environment (e.g., Puma web server), you also need to
+call `Sidekiq::Antidote.startup` on fork:
+
+[source, ruby]
+----
+# file: config/puma.rb
+on_worker_boot { Sidekiq::Antidote.startup }
+----
+
+=== Web UI
+
+Adding Antidote tab in Sidekiq web UI is as simple as:
+
+[source, ruby]
+----
+require "sidekiq/web"
+require "sidekiq/antidote/web"
+----
+
+
+== Supported Ruby Versions
+
+This library aims to support and is tested against the following Ruby versions:
+
+* Ruby 3.0.x
+* Ruby 3.1.x
+* Ruby 3.2.x
+
+If something doesn't work on one of these versions, it's a bug.
+
+This library may inadvertently work (or seem to work) on other Ruby versions,
+however support will only be provided for the versions listed above.
+
+If you would like this library to support another Ruby version or
+implementation, you may volunteer to be a maintainer. Being a maintainer
+entails making sure all tests run and pass on that implementation. When
+something breaks on your implementation, you will be responsible for providing
+patches in a timely fashion. If critical issues for a particular implementation
+exist at the time of a major release, support for that Ruby version may be
+dropped.
+
+
+== Supported Sidekiq Versions
+
+This library aims to support and work with following Sidekiq versions:
+
+* Sidekiq 7.0.x
+* Sidekiq 7.1.x
+* Sidekiq 7.2.x
+
+
+== Development
+
+  bundle install
+  bundle exec appraisal generate
+  bundle exec appraisal install
+  bundle exec rake
+
+
+== Contributing
+
+* Fork sidekiq-antidote
+* Make your changes
+* Ensure all tests pass (`bundle exec rake`)
+* Send a merge request
+* If we like them we'll merge them
+* If we've accepted a patch, feel free to ask for commit access!
+
+
+== Acknowledgement
+
+* Inspired by https://github.com/square/sidekiq-killswitch[sidekiq-killswitch]

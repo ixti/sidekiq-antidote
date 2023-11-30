@@ -1,0 +1,34 @@
+<div class="header-container">
+  <h1>Antidote</h1>
+  <div>
+    <a href="<%=root_path %>antidote/add" class="btn"><%= t("antidote.add") %></a>
+  </div>
+</div>
+
+<% if @inhibitors.empty? %>
+  <div class="alert alert-success"><%= t("antidote.no_inhibitors") %></div>
+<% else %>
+  <div class="table_container">
+    <table class="antidote table table-hover table-bordered table-striped">
+      <thead>
+        <th><%= t("antidote.treatment") %></th>
+        <th><%= t("antidote.qualifier") %></th>
+        <th><%= t("antidote.actions") %></th>
+      </thead>
+      <tbody>
+        <% @inhibitors.each do |inhibitor| %>
+          <tr id="antidote-inhibitor-<%= CGI.escape(inhibitor.id) %>">
+            <td><%= inhibitor.treatment %></td>
+            <td><%= inhibitor.class_qualifier.pattern %></td>
+            <td class="delete-confirm">
+              <form action="<%=root_path %>antidote/<%= CGI.escape(inhibitor.id) %>/delete" method="post">
+                <%= csrf_tag %>
+                <input class="btn btn-danger" type="submit" name="delete" value="<%= t("Delete") %>" data-confirm="<%= t("AreYouSureDeleteQueue") %>" />
+              </form>
+            </td>
+          </tr>
+        <% end  %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

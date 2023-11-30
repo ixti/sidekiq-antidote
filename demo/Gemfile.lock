@@ -1,0 +1,50 @@
+PATH
+  remote: ..
+  specs:
+    sidekiq-antidote (1.0.0)
+      concurrent-ruby (>= 1.2.0)
+      sidekiq (>= 7.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    concurrent-ruby (1.2.2)
+    connection_pool (2.4.1)
+    mustermann (3.0.0)
+      ruby2_keywords (~> 0.0.1)
+    nio4r (2.6.1)
+    puma (6.4.0)
+      nio4r (~> 2.0)
+    rack (2.2.8)
+    rack-protection (3.1.0)
+      rack (~> 2.2, >= 2.2.4)
+    rack-session (1.0.1)
+      rack (< 3)
+    redis-client (0.18.0)
+      connection_pool
+    ruby2_keywords (0.0.5)
+    sidekiq (7.2.0)
+      concurrent-ruby (< 2)
+      connection_pool (>= 2.3.0)
+      rack (>= 2.2.4)
+      redis-client (>= 0.14.0)
+    sinatra (3.1.0)
+      mustermann (~> 3.0)
+      rack (~> 2.2, >= 2.2.4)
+      rack-protection (= 3.1.0)
+      tilt (~> 2.0)
+    tilt (2.3.0)
+
+PLATFORMS
+  x86_64-linux
+
+DEPENDENCIES
+  puma
+  rack
+  rack-session
+  sidekiq
+  sidekiq-antidote!
+  sinatra
+
+BUNDLED WITH
+   2.4.10

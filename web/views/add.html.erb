@@ -1,0 +1,31 @@
+<div class="header-container">
+  <h1><a href="<%=root_path %>antidote">Antidote</a> / <%= t("antidote.add") %></h1>
+</div>
+
+<% if @error %>
+  <div class="alert alert-danger"><%= @error %></div>
+<% end %>
+
+<form id="antidote-inhibitor" action="<%=root_path %>antidote/add" method="post">
+  <%= csrf_tag %>
+  <div class="form-row">
+    <div class="form-group col-md-2">
+      <label for="antidote-inhibitor-treatment"><%= t("antidote.treatment") %></label>
+      <select id="antidote-inhibitor-treatment" name="treatment" class="form-control">
+        <% Sidekiq::Antidote::Inhibitor::TREATMENTS.each do |treatment| %>
+          <option <%= "selected" if treatment == @treatment %>><%= treatment %></option>
+        <% end %>
+      </select>
+    </div>
+    <div class="form-group col-md-10">
+      <label for="antidote-inhibitor-class-qualifier"><%= t("antidote.qualifier") %></label>
+      <input id="antidote-inhibitor-class-qualifier" type="text" class="form-control <%= "is-invalid" if @class_qualifier_error %>" name="class_qualifier" value="<%= @class_qualifier %>">
+      <% if @class_qualifier_error %>
+        <div id="antidote-inhibitor-class-qualifier-error" class="invalid-feedback"><%= @class_qualifier_error %></div>
+      <% end %>
+    </div>
+  </div>
+  <div class="form-row text-right">
+    <button id="antidote-inhibitor-submit" type="submit" class="btn"><%= t("antidote.submit") %></button>
+  </div>
+</form>
