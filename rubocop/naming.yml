@@ -1,0 +1,5 @@
+Naming/FileName:
+  Enabled: true
+  Exclude:
+    - "lib/sidekiq-antidote.rb"
+    - "spec/support/redis/*.rb"
