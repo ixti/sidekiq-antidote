@@ -11,8 +11,6 @@ module Sidekiq
       # @param redis_key [#to_s]
       def initialize(redis_key)
         @redis_key = -redis_key.to_s
-
-        freeze
       end
 
       # @overload each

@@ -10,8 +10,49 @@ RSpec.describe Sidekiq::Antidote::Remedy do
 
   it { is_expected.to be_an Enumerable }
 
-  # TODO: cover eventual refreshes (updates every refresh_rate cadence)
-  # TODO: test that repository fetch failures are not stopping refresher
+  it "polls repository regularily" do
+    allow(repository).to receive(:to_a).and_call_original
+
+    remedy.start_refresher
+    sleep(4 * refresh_rate)
+
+    expect(repository).to have_received(:to_a).at_least(4).times
+    expect(repository).to have_received(:to_a).at_most(5).times
+  end
+
+  context "when repository poll fails" do
+    before do
+      attempt = 0
+
+      allow(SecureRandom).to receive(:hex).and_return("123", "456", "789")
+      allow(repository).to receive(:to_a).and_wrap_original do |m|
+        attempt += 1
+
+        if attempt <= 4
+          raise "nope" if attempt.odd?
+
+          repository.add(treatment: "skip", class_qualifier: "A#{attempt}")
+        end
+
+        m.call
+      end
+
+      remedy.start_refresher
+      sleep(4 * refresh_rate)
+    end
+
+    it "keeps refresher runnning" do
+      expect(remedy.refresher_running?).to be true
+    end
+
+    it "keeps updating the local cache" do
+      expect(remedy.to_a).to contain_exactly(
+        Sidekiq::Antidote::Inhibitor.new(id: "123", treatment: "skip", class_qualifier: "A2"),
+        Sidekiq::Antidote::Inhibitor.new(id: "456", treatment: "skip", class_qualifier: "A4")
+      )
+    end
+  end
+
   describe "#each" do
     subject { remedy.each { |inhibitor| yielded_results << inhibitor } }
 
@@ -23,6 +64,8 @@ RSpec.describe Sidekiq::Antidote::Remedy do
       repository.add(treatment: "kill", class_qualifier: "A")
       repository.add(treatment: "skip", class_qualifier: "B")
     end
+
+    it { is_expected.to be remedy }
 
     it "yields each valid inhibitor" do
       remedy.start_refresher
@@ -37,8 +80,6 @@ RSpec.describe Sidekiq::Antidote::Remedy do
         )
       )
     end
-
-    it { is_expected.to be remedy }
 
     context "without block given" do
       subject { remedy.each }
