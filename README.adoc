@@ -1,5 +1,12 @@
 = Sidekiq::Antidote
 
+:ci-url: https://github.com/ixti/sidekiq-antidote/actions/workflows/ci.yml?query=branch%3Amain
+:ci-img: https://github.com/ixti/sidekiq-antidote/actions/workflows/ci.yml/badge.svg?branch=main
+:codecov-url: https://codecov.io/gh/ixti/sidekiq-antidote/tree/main
+:codecov-img: https://codecov.io/gh/ixti/sidekiq-antidote/graph/badge.svg?token=F5AAMPN35A
+
+{ci-url}[image:{ci-img}[CI]]
+{codecov-url}[image:{codecov-img}[codecov]]
 
 == Installation
 
