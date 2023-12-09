@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - (BREAKING) Remove `Sidekiq::Antidote::Config#key_prefix`
+- (BREAKING) Drop Sidekiq 7.0 support
+- (BREAKING) Drop Sidekiq 7.1 support
 
 
 ## [1.0.0.alpha.1] - 2023-12-01
