@@ -4,7 +4,7 @@ RSpec.describe Sidekiq::Antidote::Remedy do
   subject(:remedy) { described_class.new(refresh_rate, repository: repository) }
 
   let(:refresh_rate) { 0.1 }
-  let(:repository)   { Sidekiq::Antidote::Repository.new("sidekiq-antidote") }
+  let(:repository)   { Sidekiq::Antidote::Repository.new }
 
   after { remedy.stop_refresher }
 

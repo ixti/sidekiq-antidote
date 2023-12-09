@@ -8,10 +8,7 @@ module Sidekiq
     class Repository
       include Enumerable
 
-      # @param redis_key [#to_s]
-      def initialize(redis_key)
-        @redis_key = -redis_key.to_s
-      end
+      REDIS_KEY = "sidekiq-antidote"
 
       # @overload each
       #   @return [Enumerator<Inhibitor>]
@@ -25,7 +22,7 @@ module Sidekiq
 
         broken_ids = []
 
-        redis("HGETALL", @redis_key).each do |id, payload|
+        redis("HGETALL", REDIS_KEY).each do |id, payload|
           inhibitor = deserialize(id, payload)
           next yield inhibitor if inhibitor
 
@@ -48,7 +45,7 @@ module Sidekiq
             class_qualifier: class_qualifier
           )
 
-          return inhibitor if redis("HSETNX", @redis_key, *serialize(inhibitor)).to_i.positive?
+          return inhibitor if redis("HSETNX", REDIS_KEY, *serialize(inhibitor)).to_i.positive?
         end
 
         raise "can't generate available ID"
@@ -57,7 +54,7 @@ module Sidekiq
       # @param ids [Array<String>]
       # @return [nil]
       def delete(*ids)
-        redis("HDEL", @redis_key, *ids) unless ids.empty?
+        redis("HDEL", REDIS_KEY, *ids) unless ids.empty?
         nil
       end
 

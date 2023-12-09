@@ -32,7 +32,7 @@ RSpec.describe Sidekiq::Antidote do
 
     it "adds inhibitor to redis" do
       expect { described_class.add(treatment: "kill", class_qualifier: "A") }.to(
-        change { hgetall(described_class.redis_key) }.to({
+        change { redis_hgetall }.to({
           "123" => Sidekiq.dump_json(%w[kill A])
         })
       )
@@ -49,7 +49,7 @@ RSpec.describe Sidekiq::Antidote do
 
     it "removes inhibitor from redis" do
       expect { described_class.delete(inhibitor.id) }.to(
-        change { hgetall(described_class.redis_key) }.to(be_empty)
+        change { redis_hgetall }.to(be_empty)
       )
     end
   end
@@ -95,13 +95,10 @@ RSpec.describe Sidekiq::Antidote do
     end
 
     it "allows re-entrance" do
-      described_class.configure do |c|
-        c.key_prefix   = "foobar:"
-        c.refresh_rate = 42.0
-      end
+      described_class.configure { |c| c.refresh_rate = 42.0 }
 
       expect { |b| described_class.configure(&b) }
-        .to yield_with_args(have_attributes(key_prefix: "foobar:", refresh_rate: 42.0))
+        .to yield_with_args(have_attributes(refresh_rate: 42.0))
     end
   end
 

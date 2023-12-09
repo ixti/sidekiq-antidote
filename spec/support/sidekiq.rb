@@ -34,12 +34,12 @@ module AntidoteTesting
     }
   end
 
-  def hgetall(key)
-    Sidekiq.redis { _1.call("HGETALL", key) }
+  def redis_hgetall
+    Sidekiq.redis { _1.call("HGETALL", "sidekiq-antidote") }
   end
 
-  def hset(key, field, value)
-    Sidekiq.redis { _1.call("HSET", key, field, value) }
+  def redis_hset(field, value)
+    Sidekiq.redis { _1.call("HSET", "sidekiq-antidote", field, value) }
   end
 end
 

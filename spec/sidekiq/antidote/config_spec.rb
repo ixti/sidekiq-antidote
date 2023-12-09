@@ -3,39 +3,6 @@
 RSpec.describe Sidekiq::Antidote::Config do
   subject(:config) { described_class.new }
 
-  describe "#redis_key" do
-    subject { config.redis_key }
-
-    context "when key prefix was not set" do
-      it { is_expected.to eq "sidekiq-antidote" }
-    end
-
-    context "when key prefix was provided" do
-      before { config.key_prefix = "my-app:" }
-
-      it { is_expected.to eq "my-app:sidekiq-antidote" }
-    end
-  end
-
-  describe "#key_prefix=" do
-    it "sets prefix of the redis key" do
-      expect { config.key_prefix = "my-app:" }
-        .to change(config, :redis_key).to "my-app:sidekiq-antidote"
-    end
-
-    it "allows clear out previously set key prefix" do
-      config.key_prefix = "my-app:"
-
-      expect { config.key_prefix = nil }
-        .to change(config, :redis_key).to "sidekiq-antidote"
-    end
-
-    it "fails if given value is neither ‹nil›, nor ‹String›" do
-      expect { config.key_prefix = :nope }
-        .to raise_error(ArgumentError, %r{expected String, or nil})
-    end
-  end
-
   describe "#refresh_rate" do
     subject { config.refresh_rate }
 

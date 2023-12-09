@@ -13,10 +13,7 @@ RSpec.configure do |config|
   config.before do
     Sidekiq::Antidote.shutdown
     Sidekiq::Antidote.configure do |c|
-      default = Sidekiq::Antidote::Config.new
-
-      c.refresh_rate = default.refresh_rate
-      c.key_prefix   = default.key_prefix
+      c.refresh_rate = Sidekiq::Antidote::Config::REFRESH_RATE
     end
   end
 

@@ -14,9 +14,10 @@ require_relative "./antidote/version"
 module Sidekiq
   module Antidote
     MUTEX = Mutex.new
+    private_constant :MUTEX
 
     @config     = Config.new.freeze
-    @repository = Repository.new(@config.redis_key)
+    @repository = Repository.new
     @remedy     = Remedy.new(@config.refresh_rate, repository: @repository)
 
     class << self
@@ -31,10 +32,6 @@ module Sidekiq
       #   @param (see Repository#delete)
       #   @return (see Repository#delete)
       def_delegators :@repository, :delete
-
-      # @!attribute [r] redis_key
-      #   @return [String]
-      def_delegators :@config, :redis_key
 
       # @return [Array<Inhibitor>] Live list of inhibitors
       def inhibitors
@@ -62,8 +59,7 @@ module Sidekiq
 
           yield config
 
-          @config     = config.freeze
-          @repository = Repository.new(@config.redis_key)
+          @config = config.freeze
 
           self
         ensure

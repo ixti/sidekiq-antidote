@@ -20,10 +20,6 @@ require "sidekiq"
 require "sidekiq/antidote"
 
 Sidekiq::Antidote.configure do |config|
-  # Set redis key prefix.
-  # Default: nil
-  config.key_prefix = "my-app:"
-
   # Set inhibitors cache refresh rate in seconds.
   # Default: 5.0
   config.refresh_rate = 10.0

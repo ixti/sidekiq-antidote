@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Sidekiq::Antidote::Repository do
-  subject(:repository) { described_class.new(redis_key) }
-
-  let(:redis_key) { Sidekiq::Antidote::Config.new.redis_key }
+  subject(:repository) { described_class.new }
 
   it { is_expected.to be_an Enumerable }
 
@@ -13,9 +11,9 @@ RSpec.describe Sidekiq::Antidote::Repository do
     let(:yielded_results) { [] }
 
     before do
-      hset(redis_key, "123", Sidekiq.dump_json(%w[kill A]))
-      hset(redis_key, "456", Sidekiq.dump_json(%w[skip B]))
-      hset(redis_key, "999", "broken")
+      redis_hset("123", Sidekiq.dump_json(%w[kill A]))
+      redis_hset("456", Sidekiq.dump_json(%w[skip B]))
+      redis_hset("999", "broken")
     end
 
     it "yields each valid inhibitor" do
@@ -31,7 +29,7 @@ RSpec.describe Sidekiq::Antidote::Repository do
 
     it "prunes broken records" do
       expect { subject }.to(
-        change { hgetall(redis_key) }.to({
+        change { redis_hgetall }.to({
           "123" => Sidekiq.dump_json(%w[kill A]),
           "456" => Sidekiq.dump_json(%w[skip B])
         })
@@ -54,7 +52,7 @@ RSpec.describe Sidekiq::Antidote::Repository do
 
       it "prunes broken records" do
         expect { subject.to_a }.to(
-          change { hgetall(redis_key) }.to({
+          change { redis_hgetall }.to({
             "123" => Sidekiq.dump_json(%w[kill A]),
             "456" => Sidekiq.dump_json(%w[skip B])
           })
@@ -65,14 +63,14 @@ RSpec.describe Sidekiq::Antidote::Repository do
 
   describe "#add" do
     before do
-      hset(redis_key, "123", Sidekiq.dump_json(%w[kill A]))
+      redis_hset("123", Sidekiq.dump_json(%w[kill A]))
     end
 
     it "adds inhibitor to redis" do
       allow(SecureRandom).to receive(:hex).and_return("456")
 
       expect { repository.add(treatment: "skip", class_qualifier: "B") }.to(
-        change { hgetall(redis_key) }.to({
+        change { redis_hgetall }.to({
           "123" => Sidekiq.dump_json(%w[kill A]),
           "456" => Sidekiq.dump_json(%w[skip B])
         })
@@ -91,7 +89,7 @@ RSpec.describe Sidekiq::Antidote::Repository do
 
       it "retries ID generation" do
         expect { repository.add(treatment: "skip", class_qualifier: "B") }.to(
-          change { hgetall(redis_key) }.to({
+          change { redis_hgetall }.to({
             "123" => Sidekiq.dump_json(%w[kill A]),
             "456" => Sidekiq.dump_json(%w[skip B])
           })
@@ -118,16 +116,16 @@ RSpec.describe Sidekiq::Antidote::Repository do
     subject { repository.delete("456") }
 
     before do
-      hset(redis_key, "123", Sidekiq.dump_json(%w[kill A]))
-      hset(redis_key, "456", Sidekiq.dump_json(%w[skip B]))
-      hset(redis_key, "789", Sidekiq.dump_json(%w[skip C]))
+      redis_hset("123", Sidekiq.dump_json(%w[kill A]))
+      redis_hset("456", Sidekiq.dump_json(%w[skip B]))
+      redis_hset("789", Sidekiq.dump_json(%w[skip C]))
     end
 
     it { is_expected.to be nil }
 
     it "removes matching inhibitor" do
       expect { subject }.to(
-        change { hgetall(redis_key) }.to({
+        change { redis_hgetall }.to({
           "123" => Sidekiq.dump_json(%w[kill A]),
           "789" => Sidekiq.dump_json(%w[skip C])
         })
@@ -140,7 +138,7 @@ RSpec.describe Sidekiq::Antidote::Repository do
       it { is_expected.to be nil }
 
       it "does nothing" do
-        expect { subject }.to(keep_unchanged { hgetall(redis_key) })
+        expect { subject }.to(keep_unchanged { redis_hgetall })
       end
     end
 
@@ -151,7 +149,7 @@ RSpec.describe Sidekiq::Antidote::Repository do
 
       it "removes matching inhibitor" do
         expect { subject }.to(
-          change { hgetall(redis_key) }.to({
+          change { redis_hgetall }.to({
             "123" => Sidekiq.dump_json(%w[kill A])
           })
         )
