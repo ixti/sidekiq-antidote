@@ -4,6 +4,7 @@ require "concurrent"
 
 module Sidekiq
   module Antidote
+    # @api internal
     # Eventually consistent list of inhibitors. Used by middlewares to avoid
     # hitting Redis on every lookup.
     class Remedy
