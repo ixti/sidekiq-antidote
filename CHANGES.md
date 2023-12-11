@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [1.0.0] - 2023-12-10
+
+### Changed
+
+- Improve documentation and web UI
+
 ### Removed
 
 - (BREAKING) Remove `Sidekiq::Antidote::Config#key_prefix`
@@ -21,5 +28,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release.
 
 
-[unreleased]: https://github.com/ixti/sidekiq-pauzer/compare/v1.0.0.alpha.1...main
+[unreleased]: https://github.com/ixti/sidekiq-pauzer/compare/v1.0.0...main
+[1.0.0]: https://github.com/ixti/sidekiq-pauzer/compare/v1.0.0.alpha.1...v1.0.0
 [1.0.0.alpha.1]: https://github.com/ixti/sidekiq-antidote/tree/v1.0.0.alpha.1
