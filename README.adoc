@@ -53,6 +53,43 @@ require "sidekiq/antidote/web"
 ----
 
 
+== Inhibitors
+
+=== Treatments
+
+When adding antidote you must pick on of the treatments:
+
+skip::
+  Skip the job (don't enqueue and/or perform)
+kill::
+  Kill the job (send to the dead set instead of enqueueing and/or performing)
+
+
+=== Antidote Qualifiers
+
+Qualifier is the job class pattern. It may match the job class or the job class
+and method name (when used with ActionMailer delayed deliveries):
+
+* `ExampleJob`
+* `Namespaced::ExampleJob`
+* `UserMailer#welcome`
+
+You can also use pattern matching:
+
+*::
+  Matches any number of alpha-numeric characters and underscores:
+  * `*Job` matches: `ExampleJob`, but not `Namespaced::ExampleJob`, or `UserMailer#welcome`
+  * `UserMailer#*` matches any method of `UserMailer`
+**::
+  Matches any number of components:
+  * `**` mathes any job or mailer method
+  * `A::**::Job` matches `A::B::Job`, `A::B::C::D::CJob`, etc.
+  * `A**::Job` matches `A::Job`, `Abc::Job`, `A::B::Job`, etc.
+{}::
+  Matches any of the given literal:
+  * `{A,B,C}Job` matches `AJob`, `BJob`, and `CJob`
+
+
 == Supported Ruby Versions
 
 This library aims to support and is tested against the following Ruby versions:

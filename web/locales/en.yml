@@ -1,8 +1,10 @@
 ---
 en:
   antidote.treatment: Treatment
-  antidote.qualifier: Job Class Pattern
+  antidote.qualifier: Qualifier
   antidote.actions: Actions
   antidote.add: Add Inhibitor
-  antidote.submit: Submit
+  antidote.add.submit: Submit
+  antidote.add.confirm: Are you sure you want to add the inhibitor?
   antidote.no_inhibitors: No inhibitors found
+  antidote.delete.confirm: Are you sure you want to delete inhibitor of ‹%{qualifier}› with ‹%{treatment}› treatment?

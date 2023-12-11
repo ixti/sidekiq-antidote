@@ -23,7 +23,7 @@
             <td class="delete-confirm">
               <form action="<%=root_path %>antidote/<%= CGI.escape(inhibitor.id) %>/delete" method="post">
                 <%= csrf_tag %>
-                <input class="btn btn-danger" type="submit" name="delete" value="<%= t("Delete") %>" data-confirm="<%= t("AreYouSureDeleteQueue") %>" />
+                <input class="btn btn-danger" type="submit" name="delete" value="<%= t("Delete") %>" data-confirm="<%= t("antidote.delete.confirm", treatment: inhibitor.treatment, qualifier: inhibitor.class_qualifier) %>" />
               </form>
             </td>
           </tr>

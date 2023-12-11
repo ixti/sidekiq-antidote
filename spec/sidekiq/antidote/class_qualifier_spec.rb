@@ -109,6 +109,11 @@ RSpec.describe Sidekiq::Antidote::ClassQualifier do
       fails_for: %w[A::B::**]
 
     include_examples "pattern matching",
+      pattern:   "A**::Job",
+      works_for: %w[A::Job A::B::Job],
+      fails_for: %w[A**::Job]
+
+    include_examples "pattern matching",
       pattern:   "A::{B,C}::{D}::E",
       works_for: %w[A::B::D::E A::C::D::E],
       fails_for: %w[A::B::D A::B,C::D::E]

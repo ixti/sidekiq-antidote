@@ -61,9 +61,9 @@ RSpec.describe Sidekiq::Antidote::Web, type: :feature do
 
     it "allows adding <skip> inhibitors" do
       within("form#antidote-inhibitor") do
-        select("skip", from: "antidote-inhibitor-treatment")
-        fill_in("antidote-inhibitor-class-qualifier", with: "**Job")
-        click_button("antidote-inhibitor-submit")
+        choose("antidote-inhibitor-treatment-skip")
+        fill_in("class_qualifier", with: "**Job")
+        click_button("Submit")
       end
 
       expect(Sidekiq::Antidote.inhibitors).to contain_exactly(
@@ -76,9 +76,9 @@ RSpec.describe Sidekiq::Antidote::Web, type: :feature do
 
     it "allows adding <kill> inhibitors" do
       within("form#antidote-inhibitor") do
-        select("kill", from: "antidote-inhibitor-treatment")
-        fill_in("antidote-inhibitor-class-qualifier", with: "**Job")
-        click_button("antidote-inhibitor-submit")
+        choose("antidote-inhibitor-treatment-kill")
+        fill_in("class_qualifier", with: "**Job")
+        click_button("Submit")
       end
 
       expect(Sidekiq::Antidote.inhibitors).to contain_exactly(
@@ -91,16 +91,18 @@ RSpec.describe Sidekiq::Antidote::Web, type: :feature do
 
     it "shows error when class qualifier is invalid" do
       within("form#antidote-inhibitor") do
-        select("kill", from: "antidote-inhibitor-treatment")
-        fill_in("antidote-inhibitor-class-qualifier", with: "***Job")
-        click_button("antidote-inhibitor-submit")
+        choose("antidote-inhibitor-treatment-skip")
+        fill_in("class_qualifier", with: "***Job")
+        click_button("Submit")
       end
 
       expect(Sidekiq::Antidote.inhibitors).to contain_exactly(
         have_attributes(treatment: "skip", class_qualifier: Sidekiq::Antidote::ClassQualifier.new("AlphaJob"))
       )
 
-      expect(page).to have_current_path("/antidote/add").and have_css("#antidote-inhibitor-class-qualifier-error")
+      expect(page)
+        .to have_current_path("/antidote/add")
+        .and have_css("#antidote-inhibitor-qualifier-error")
     end
   end
 

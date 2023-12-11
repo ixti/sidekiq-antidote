@@ -6,26 +6,51 @@
   <div class="alert alert-danger"><%= @error %></div>
 <% end %>
 
-<form id="antidote-inhibitor" action="<%=root_path %>antidote/add" method="post">
-  <%= csrf_tag %>
-  <div class="form-row">
-    <div class="form-group col-md-2">
-      <label for="antidote-inhibitor-treatment"><%= t("antidote.treatment") %></label>
-      <select id="antidote-inhibitor-treatment" name="treatment" class="form-control">
-        <% Sidekiq::Antidote::Inhibitor::TREATMENTS.each do |treatment| %>
-          <option <%= "selected" if treatment == @treatment %>><%= treatment %></option>
+<div class="col-sm-12">
+  <form id="antidote-inhibitor" class="form-horizontal" action="<%=root_path %>antidote/add" method="post">
+    <%= csrf_tag %>
+    <div class="form-group">
+      <label class="col-sm-2 control-label"><%= t("antidote.treatment") %></label>
+      <div class="radio col-sm-10">
+        <label>
+          <input id="antidote-inhibitor-treatment-skip" type="radio" name="treatment" value="skip" <%= "checked" if "skip" == @treatment %>>
+          skip <em class="text-muted">(don't enqueue and/or perform)</em>
+        </label>
+      </div>
+      <div class="radio col-sm-offset-2 col-sm-10">
+        <label>
+          <input id="antidote-inhibitor-treatment-kill" type="radio" name="treatment" value="kill" <%= "checked" if "kill" == @treatment %>>
+          kill <em class="text-muted">(send to the dead set instead of enqueueing and/or performing)</em>
+        </label>
+      </div>
+    </div>
+    <div class="form-group <%= "has-error" if @class_qualifier_error %>">
+      <label class="col-sm-2 control-label"><%= t("antidote.qualifier") %></label>
+      <div class="col-sm-10">
+        <input id="antidote-inhibitor-qualifier" type="text" class="form-control <%= "is-invalid" if @class_qualifier_error %>" name="class_qualifier" value="<%= @class_qualifier %>">
+        <% if @class_qualifier_error %>
+          <div id="antidote-inhibitor-qualifier-error" class="help-block">
+            <strong>ERROR:</strong> <%= @class_qualifier_error %>
+          </div>
         <% end %>
-      </select>
+        <div class="help-block">
+          <strong>Examples:</strong>
+          <ul class="list-unstyled">
+            <li><kbd>ExampleJob</kbd> to match <var>ExampleJob</var> exactly</li>
+            <li><kbd>Namespaced::ExampleJob</kbd> to match <var>Namespaced::ExampleJob</var> exactly</li>
+            <li><kbd>UserMailer#welcome</kbd> to match <var>welcome</var> method of <var>UserMailer</var></li>
+            <li><kbd>*Job</kbd> to match <var>ExampleJob</var>, but not <var>Namespaced::ExampleJob</var></li>
+            <li><kbd>UserMailer#*</kbd> to match any method of <var>UserMailer</var></li>
+            <li><kbd>**Job</kbd> to match <var>ExampleJob</var>, <var>Namespaced::ExampleJob</var>, etc.</li>
+            <li><kbd>{A,B,C}Job</kbd> to match <var>AJob</var>, <var>BJob</var>, or <var>CJob</var></li>
+          </ul>
+        </div>
+      </div>
     </div>
-    <div class="form-group col-md-10">
-      <label for="antidote-inhibitor-class-qualifier"><%= t("antidote.qualifier") %></label>
-      <input id="antidote-inhibitor-class-qualifier" type="text" class="form-control <%= "is-invalid" if @class_qualifier_error %>" name="class_qualifier" value="<%= @class_qualifier %>">
-      <% if @class_qualifier_error %>
-        <div id="antidote-inhibitor-class-qualifier-error" class="invalid-feedback"><%= @class_qualifier_error %></div>
-      <% end %>
+    <div class="form-group">
+      <div class="radio col-sm-offset-2 col-sm-10">
+        <input class="btn btn-danger" type="submit" name="add" value="<%= t("antidote.add.submit") %>" data-confirm="<%= t("antidote.add.confirm") %>" />
+      </div>
     </div>
-  </div>
-  <div class="form-row text-right">
-    <button id="antidote-inhibitor-submit" type="submit" class="btn"><%= t("antidote.submit") %></button>
-  </div>
-</form>
+  </form>
+</div>
