@@ -8,19 +8,19 @@ module Sidekiq
   module Antidote
     # Single poison inhibition rule: class qualifier + treatment action.
     class Inhibitor
-      TREATMENTS  = %w[skip kill].freeze
+      TREATMENTS  = %w[skip kill suspend].freeze
 
       # @return [String]
       attr_reader :id
 
-      # @return ["skip", "kill"]
+      # @return ["skip", "kill", "suspend"]
       attr_reader :treatment
 
       # @return [ClassQualifier]
       attr_reader :class_qualifier
 
       # @param id [#to_s]
-      # @param treatment ["skip", "kill"]
+      # @param treatment ["skip", "kill", "suspend"]
       # @param class_qualifier [#to_s]
       def initialize(id:, treatment:, class_qualifier:)
         @id              = -id.to_s
@@ -38,7 +38,7 @@ module Sidekiq
       end
 
       def to_s
-        "#{treatment} #{class_qualifier}"
+        "#{treatment} #{class_qualifier}" + (treatment == "suspend" ? ": #{id}" : "")
       end
 
       def eql?(other)
@@ -46,6 +46,26 @@ module Sidekiq
           && id == other.id && treatment == other.treatment && class_qualifier == other.class_qualifier
       end
       alias == eql?
+
+      def apply(message)
+        case treatment
+        when "kill"
+          kill(message)
+        when "suspend"
+          suspend(message)
+        end
+      end
+
+      private
+
+      def kill(message)
+        DeadSet.new.kill(Sidekiq.dump_json(message))
+      end
+
+      def suspend(message)
+        puts id
+        SuspensionGroup.new(name: id).add(message: message)
+      end
     end
   end
 end

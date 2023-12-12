@@ -12,7 +12,7 @@ RSpec.describe Sidekiq::Antidote::Inhibitor do
   describe ".new" do
     it { is_expected.to be_an_instance_of(described_class).and(be_frozen) }
 
-    where(treatment: ["skip", "kill", :skip, :kill])
+    where(treatment: ["skip", "kill", "suspend", :skip, :kill, :suspend])
     with_them do
       it { is_expected.to be_an_instance_of(described_class) }
       it { is_expected.to have_attributes(id: id.to_s) }
@@ -23,7 +23,7 @@ RSpec.describe Sidekiq::Antidote::Inhibitor do
     context "with invalid id" do
       where(id: [nil, ""])
       with_them do
-        it "fails intialization" do
+        it "fails initialization" do
           expect { inhibitor }.to raise_error(ArgumentError, "invalid id: #{id.inspect}")
         end
       end
@@ -32,7 +32,7 @@ RSpec.describe Sidekiq::Antidote::Inhibitor do
     context "with invalid treatment" do
       where(treatment: [nil, "", "noop"])
       with_them do
-        it "fails intialization" do
+        it "fails initialization" do
           expect { inhibitor }.to raise_error(ArgumentError, "invalid treatment: #{treatment.inspect}")
         end
       end
@@ -41,21 +41,21 @@ RSpec.describe Sidekiq::Antidote::Inhibitor do
     context "with invalid class qualifier" do
       where(class_qualifier: [nil, ""])
       with_them do
-        it "fails intialization because of blank patttern" do
+        it "fails initialization because of blank patttern" do
           expect { inhibitor }.to raise_error(ArgumentError, "blank pattern")
         end
       end
 
       where(class_qualifier: ["Invalid!Qualifier"])
       with_them do
-        it "fails intialization because of invalid token" do
+        it "fails initialization because of invalid token" do
           expect { inhibitor }.to raise_error(ArgumentError, %r{invalid token})
         end
       end
 
       where(class_qualifier: ["***Job"])
       with_them do
-        it "fails intialization because of ambiguous wildcard" do
+        it "fails initialization because of ambiguous wildcard" do
           expect { inhibitor }.to raise_error(ArgumentError, %r{ambiguous wildcard})
         end
       end
@@ -103,6 +103,13 @@ RSpec.describe Sidekiq::Antidote::Inhibitor do
     subject { inhibitor.to_s }
 
     it { is_expected.to eq "#{treatment} #{class_qualifier}" }
+
+    context "when treatment is suspend" do
+      let(:treatment) { "suspend" }
+      let(:id)        { "one" }
+
+      it { is_expected.to eq "#{treatment} #{class_qualifier}: one" }
+    end
   end
 
   describe "#eql?" do
@@ -139,6 +146,38 @@ RSpec.describe Sidekiq::Antidote::Inhibitor do
   describe "#==" do
     it "is an alias of #eql?" do
       expect(inhibitor.method(:==)).to eq inhibitor.method(:eql?)
+    end
+  end
+
+  describe "#apply" do
+    subject { inhibitor.apply(message: job_message) }
+
+    let(:job_message) { simple_job_message(klass: "A::B::CJob") }
+
+    context "when treatment is skip" do
+      it "does not deliver job to morge" do
+        expect { subject }.to keep_unchanged(Sidekiq::DeadSet.new, :size)
+      end
+    end
+
+    context "when treatment is kill" do
+      let(:treatment) { "kill" }
+
+      it "delivers job to morgue" do
+        expect { subject }.to change(Sidekiq::DeadSet.new, :size)
+      end
+    end
+
+    context "when treatment is suspend" do
+      let(:treatment) { "suspend" }
+
+      it "does not deliver job to morge" do
+        expect { subject }.to keep_unchanged(Sidekiq::DeadSet.new, :size)
+      end
+
+      it "stores the job in suspension group" do
+        expect { subject }.to change { Sidekiq::Antidote::SuspensionGroup.new(name: id).size }.by(1)
+      end
     end
   end
 end

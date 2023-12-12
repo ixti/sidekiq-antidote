@@ -41,6 +41,22 @@ module AntidoteTesting
   def redis_hset(field, value)
     Sidekiq.redis { _1.call("HSET", "sidekiq-antidote", field, value) }
   end
+
+  def redis_lpush(key, value)
+    Sidekiq.redis { _1.call("LPUSH", key, value) }
+  end
+
+  def redis_llen(key)
+    Sidekiq.redis { _1.call("LLEN", key) }
+  end
+
+  def redis_scard(key)
+    Sidekiq.redis { _1.call("SCARD", key) }
+  end
+
+  def redis_sadd(member)
+    Sidekiq.redis { _1.call("SADD", "suspension_groups", member) }
+  end
 end
 
 RSpec.configure do |config|
