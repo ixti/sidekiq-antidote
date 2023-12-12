@@ -84,22 +84,6 @@ RSpec.describe Sidekiq::Antidote::Inhibitor do
     it { is_expected.to have_attributes(pattern: class_qualifier) }
   end
 
-  describe "#lethal?" do
-    subject { inhibitor.lethal? }
-
-    context "when treatment=skip" do
-      let(:treatment) { "skip" }
-
-      it { is_expected.to be false }
-    end
-
-    context "when treatment=kill" do
-      let(:treatment) { "kill" }
-
-      it { is_expected.to be true }
-    end
-  end
-
   describe "#match?" do
     subject { inhibitor.match?(Sidekiq::JobRecord.new(job_message)) }
 

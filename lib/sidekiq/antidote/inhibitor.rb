@@ -33,10 +33,6 @@ module Sidekiq
         freeze
       end
 
-      def lethal?
-        "kill" == treatment
-      end
-
       def match?(job_record)
         class_qualifier.match?(job_record.display_class)
       end

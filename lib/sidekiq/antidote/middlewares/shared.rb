@@ -17,7 +17,7 @@ module Sidekiq
 
           Antidote.log(:warn) { "I've got a poison! -- #{job_record.display_class}" }
           Antidote.log(:warn) { "I've got a remedy! -- #{inhibitor}" }
-          DeadSet.new.kill(Sidekiq.dump_json(message)) if inhibitor.lethal?
+          DeadSet.new.kill(Sidekiq.dump_json(message)) if "kill" == inhibitor.treatment
 
           true
         end
