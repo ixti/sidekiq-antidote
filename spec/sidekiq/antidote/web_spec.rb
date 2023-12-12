@@ -102,7 +102,7 @@ RSpec.describe Sidekiq::Antidote::Web, type: :feature do
 
       expect(page)
         .to have_current_path("/antidote/add")
-        .and have_css("#antidote-inhibitor-qualifier-error")
+        .and have_css("#antidote-inhibitor-class-qualifier-error")
     end
   end
 

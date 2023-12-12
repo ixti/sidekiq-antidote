@@ -1,7 +1,7 @@
 ---
 en:
   antidote.treatment: Treatment
-  antidote.qualifier: Qualifier
+  antidote.class_qualifier: Class Qualifier
   antidote.actions: Actions
   antidote.add: Add Inhibitor
   antidote.add.submit: Submit

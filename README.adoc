@@ -65,10 +65,10 @@ kill::
   Kill the job (send to the dead set instead of enqueueing and/or performing)
 
 
-=== Qualifiers
+=== Class Qualifiers
 
-Qualifier is the job class pattern. It may match the job class or the job class
-and method name (when used with ActionMailer delayed deliveries):
+Class qualifier is the job class pattern. It may match the job class or the job
+class and method name (when used with ActionMailer delayed deliveries):
 
 * `ExampleJob`
 * `Namespaced::ExampleJob`
