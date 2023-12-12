@@ -22,22 +22,6 @@ task :test do
   end
 end
 
-namespace :test do
-  desc "Generate test coverage report"
-  task :coverage do
-    require "simplecov"
-
-    SimpleCov.collate Dir["coverage/**/.resultset.json"] do
-      if ENV["CI"]
-        require "simplecov-cobertura"
-        formatter SimpleCov::Formatter::CoberturaFormatter
-      else
-        formatter SimpleCov::Formatter::HTMLFormatter
-      end
-    end
-  end
-end
-
 desc "Lint codebase"
 task :lint do
   sh "bundle exec rubocop --color"

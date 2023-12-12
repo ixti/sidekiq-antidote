@@ -38,31 +38,6 @@ jobs:
 
       - run: bundle exec rake test
 
-      - name: "Upload coverage results"
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage-${{ matrix.ruby }}
-          path: coverage/.resultset.json
-
-  test-coverage:
-    runs-on: ubuntu-latest
-    needs: test
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ruby-3.2
-          bundler-cache: true
-
-      - name: "Download coverage results"
-        uses: actions/download-artifact@v3
-        with:
-          path: coverage
-
-      - run: bundle exec rake test:coverage
-
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         env:
