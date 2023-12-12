@@ -11,6 +11,14 @@ require_relative "./antidote/remedy"
 require_relative "./antidote/repository"
 require_relative "./antidote/version"
 
+if RUBY_VERSION < "3.1.0"
+  puts "testing codecov 1"
+elsif RUBY_VERSION < "3.2.0"
+  puts "testing codecov 2"
+else
+  puts "testing codecov 3"
+end
+
 module Sidekiq
   module Antidote
     MUTEX = Mutex.new

@@ -9,7 +9,10 @@ SimpleCov.start do
   enable_coverage :branch
 
   if ENV["CI"]
-    formatter SimpleCov::Formatter::SimpleFormatter
+    formatter SimpleCov::Formatter::MultiFormatter.new([
+      SimpleCov::Formatter::SimpleFormatter,
+      SimpleCov::Formatter::CoberturaFormatter
+    ])
   else
     formatter SimpleCov::Formatter::MultiFormatter.new([
       SimpleCov::Formatter::SimpleFormatter,
