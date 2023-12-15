@@ -10,16 +10,26 @@ module Sidekiq
 
         # @return [true] if message was inhibited
         # @return [false] otherwise
-        def inhibit(message)
+        def inhibit(message, queue_name)
           job_record = Sidekiq::JobRecord.new(message)
           inhibitor  = Antidote.remedy_for(job_record)
           return false unless inhibitor
 
           Antidote.log(:warn) { "I've got a poison! -- #{job_record.display_class}" }
           Antidote.log(:warn) { "I've got a remedy! -- #{inhibitor}" }
-          DeadSet.new.kill(Sidekiq.dump_json(message)) if "kill" == inhibitor.treatment
+
+          apply_treatment(inhibitor, job_record, queue_name)
 
           true
+        end
+
+        def apply_treatment(inhibitor, job_record, queue_name)
+          # Ensure message has queue name
+          message = Sidekiq.dump_json(job_record.item.merge({ "queue" => queue_name }))
+
+          case inhibitor.treatment
+          when "kill" then DeadSet.new.kill(message)
+          end
         end
       end
     end

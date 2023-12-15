@@ -11,8 +11,8 @@ module Sidekiq
 
         # @see https://github.com/sidekiq/sidekiq/wiki/Middleware
         # @see https://github.com/sidekiq/sidekiq/wiki/Job-Format
-        def call(_, job_payload, _)
-          yield unless inhibit(job_payload)
+        def call(_, job_payload, queue_name)
+          yield unless inhibit(job_payload, queue_name)
         end
       end
     end
