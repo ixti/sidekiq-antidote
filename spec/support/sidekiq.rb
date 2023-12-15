@@ -53,10 +53,6 @@ module AntidoteTesting
   def redis_scard(key)
     Sidekiq.redis { _1.call("SCARD", key) }
   end
-
-  def redis_sadd(member)
-    Sidekiq.redis { _1.call("SADD", "suspension_groups", member) }
-  end
 end
 
 RSpec.configure do |config|

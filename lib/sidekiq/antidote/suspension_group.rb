@@ -7,7 +7,11 @@ module Sidekiq
       include Enumerable
 
       def self.all
-        redis("SSCAN", "suspension_groups", 0)[1].to_a.map { |sg| SuspensionGroup.new(name: sg) }
+        redis("KEYS", "#{Repository::REDIS_KEY}:suspend:*").to_a.map do |sg|
+          name = sg.split(":").last
+
+          SuspensionGroup.new(name: name)
+        end
       end
 
       def self.redis(...)
@@ -43,7 +47,6 @@ module Sidekiq
       end
 
       def add(message:)
-        self.class.redis("SADD", "suspension_groups", name)
         self.class.redis("LPUSH", @rname, Sidekiq.dump_json(message))
       end
     end

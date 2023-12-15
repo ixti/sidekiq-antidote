@@ -38,7 +38,7 @@ module Sidekiq
       end
 
       def to_s
-        "#{treatment} #{class_qualifier}" + (treatment == "suspend" ? ": #{id}" : "")
+        "#{treatment} #{class_qualifier}"
       end
 
       def eql?(other)
@@ -46,26 +46,6 @@ module Sidekiq
           && id == other.id && treatment == other.treatment && class_qualifier == other.class_qualifier
       end
       alias == eql?
-
-      def apply(message)
-        case treatment
-        when "kill"
-          kill(message)
-        when "suspend"
-          suspend(message)
-        end
-      end
-
-      private
-
-      def kill(message)
-        DeadSet.new.kill(Sidekiq.dump_json(message))
-      end
-
-      def suspend(message)
-        puts id
-        SuspensionGroup.new(name: id).add(message: message)
-      end
     end
   end
 end

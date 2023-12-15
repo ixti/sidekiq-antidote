@@ -11,8 +11,9 @@ RSpec.describe Sidekiq::Antidote::SuspensionGroup do
     subject { described_class.all }
 
     before do
-      redis_sadd(%w[group1 group2 group3])
       redis_lpush("sidekiq-antidote:suspend:group1", Sidekiq.dump_json(simple_job_message(klass: "A::B::CJob")))
+      redis_lpush("sidekiq-antidote:suspend:group2", Sidekiq.dump_json(simple_job_message(klass: "A::B::CJob")))
+      redis_lpush("sidekiq-antidote:suspend:group3", Sidekiq.dump_json(simple_job_message(klass: "A::B::CJob")))
     end
 
     it "returns all suspension groups" do
@@ -62,24 +63,6 @@ RSpec.describe Sidekiq::Antidote::SuspensionGroup do
       expect { suspension_group.add(message: job_message) }.to(
         change { redis_llen("sidekiq-antidote:suspend:group1") }.from(1).to(2)
       )
-    end
-
-    it "adds a suspension group to redis" do
-      expect { suspension_group.add(message: job_message) }.to(
-          change { redis_scard("suspension_groups") }.from(0).to(1)
-        )
-    end
-
-    context "when suspension group already exists" do
-      before do
-        redis_sadd(name)
-      end
-
-      it "does not add a suspension group to redis" do
-        expect { suspension_group.add(message: job_message) }.to(
-            keep_unchanged { redis_scard("suspension_groups") }
-          )
-      end
     end
   end
 end
