@@ -29,8 +29,7 @@ module Sidekiq
 
           case inhibitor.treatment
           when "kill" then DeadSet.new.kill(message)
-          when "suspend"
-            SuspensionGroup.new(name: inhibitor.id).add(message: message)
+          when "suspend" then SuspensionGroup.new(name: inhibitor.id).add(message: message)
           end
         end
       end

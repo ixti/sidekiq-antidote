@@ -49,6 +49,10 @@ module Sidekiq
       def add(message:)
         self.class.redis("LPUSH", @rname, Sidekiq.dump_json(message))
       end
+
+      def release!
+        self.class.redis("RENAME", @rname, "#{Repository::REDIS_KEY}:release:#{name}")
+      end
     end
   end
 end

@@ -65,4 +65,18 @@ RSpec.describe Sidekiq::Antidote::SuspensionGroup do
       )
     end
   end
+
+  describe "#release!" do
+    let(:job_message) { simple_job_message(klass: "A::B::CJob") }
+
+    before do
+      redis_lpush("sidekiq-antidote:suspend:group1", Sidekiq.dump_json(job_message))
+    end
+
+    it "renames the suspend list to release" do
+      expect { suspension_group.release! }
+        .to change { redis_llen("sidekiq-antidote:suspend:group1") }.to(0)
+        .and change { redis_llen("sidekiq-antidote:release:group1") }.to(1)
+    end
+  end
 end
