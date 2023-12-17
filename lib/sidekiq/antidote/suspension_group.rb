@@ -51,6 +51,8 @@ module Sidekiq
       end
 
       def release!
+        return unless self.class.redis("EXISTS", @rname) != 0
+
         self.class.redis("RENAME", @rname, "#{Repository::REDIS_KEY}:release:#{name}")
       end
     end

@@ -141,4 +141,24 @@ RSpec.describe Sidekiq::Antidote::Inhibitor do
       expect(inhibitor.method(:==)).to eq inhibitor.method(:eql?)
     end
   end
+
+  describe "#suspension_group_size" do
+    let(:treatment) { "suspend" }
+
+    before do
+      redis_lpush("sidekiq-antidote:suspend:deadbeef", Sidekiq.dump_json(simple_job_message(klass: "DreamJob")))
+    end
+
+    it "returns the size of the suspension group" do
+      expect(subject.suspension_group_size).to eq(1)
+    end
+
+    context "when treatment is not suspend" do
+      let(:treatment) { "skip" }
+
+      it "returns 0" do
+        expect(subject.suspension_group_size).to eq(0)
+      end
+    end
+  end
 end

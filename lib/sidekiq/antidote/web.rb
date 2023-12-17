@@ -45,11 +45,9 @@ module Sidekiq
         app.post("/antidote/:id/delete") do
           Antidote.delete(route_params[:id])
 
-          redirect "#{root_path}antidote"
-        end
-
-        app.post("/antidote/suspension-group/:id/delete") do
           Sidekiq::Antidote::SuspensionGroup.new(name: route_params[:id]).release!
+
+          redirect "#{root_path}antidote"
         end
       end
     end

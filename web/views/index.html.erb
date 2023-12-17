@@ -18,7 +18,12 @@
       <tbody>
         <% @inhibitors.each do |inhibitor| %>
           <tr id="antidote-inhibitor-<%= CGI.escape(inhibitor.id) %>">
-            <td><%= inhibitor.treatment %></td>
+            <td width="25%">
+              <%= inhibitor.treatment %>
+              <% if inhibitor.treatment == "suspend" %>
+                <em class="text-muted" style="margin-left: 10px"> Jobs suspended: <%= inhibitor.suspension_group_size %> </em>
+              <% end %>
+            </td>
             <td><%= inhibitor.class_qualifier.pattern %></td>
             <td class="delete-confirm">
               <form action="<%=root_path %>antidote/<%= CGI.escape(inhibitor.id) %>/delete" method="post">

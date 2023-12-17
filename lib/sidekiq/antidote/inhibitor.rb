@@ -46,6 +46,12 @@ module Sidekiq
           && id == other.id && treatment == other.treatment && class_qualifier == other.class_qualifier
       end
       alias == eql?
+
+      def suspension_group_size
+        return 0 unless treatment == "suspend"
+
+        SuspensionGroup.new(name: id).size
+      end
     end
   end
 end
