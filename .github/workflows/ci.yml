@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    name: "rspec (${{ matrix.ruby }} ${{ matrix.redis }})"
+    name: "test / ${{ matrix.ruby }} / ${{ matrix.redis }}"
 
     runs-on: ubuntu-latest
 
@@ -45,8 +45,8 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   # See: https://github.com/orgs/community/discussions/26822#discussioncomment-3305794
-  all-tests-pass:
-    name: "All Tests Pass"
+  test-finale:
+    name: "test"
 
     runs-on: ubuntu-latest
     if: ${{ always() }}
