@@ -10,7 +10,7 @@ module Sidekiq
 
         # @return [true] if message was inhibited
         # @return [false] otherwise
-        def inhibit(message, queue_name)
+        def inhibit(message, queue_name, tracker)
           job_record = Sidekiq::JobRecord.new(message)
           inhibitor  = Antidote.remedy_for(job_record)
           return false unless inhibitor
@@ -18,6 +18,7 @@ module Sidekiq
           Antidote.log(:warn) { "I've got a poison! -- #{job_record.display_class}" }
           Antidote.log(:warn) { "I've got a remedy! -- #{inhibitor}" }
 
+          tracker.track(inhibitor.treatment, job_record.class)
           apply_treatment(inhibitor, job_record, queue_name)
 
           true

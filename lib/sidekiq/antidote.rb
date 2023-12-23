@@ -10,6 +10,7 @@ require_relative "./antidote/middlewares/server"
 require_relative "./antidote/remedy"
 require_relative "./antidote/repository"
 require_relative "./antidote/version"
+require_relative "./antidote/metrics/tracker"
 
 module Sidekiq
   module Antidote
@@ -102,23 +103,26 @@ module Sidekiq
     end
   end
 
+  tracker = Sidekiq::Antidote::Metrics::Tracker.new
+
   # TODO: How to test both configure_{client,server}?
   configure_client do |config|
     config.client_middleware do |chain|
-      chain.add Sidekiq::Antidote::Middlewares::Client
+      chain.add Sidekiq::Antidote::Middlewares::Client, tracker
     end
   end
 
   configure_server do |config|
     config.on(:startup)  { Antidote.startup }
     config.on(:shutdown) { Antidote.shutdown }
+    config.on(:beat) { tracker.flush }
 
     config.client_middleware do |chain|
-      chain.add Sidekiq::Antidote::Middlewares::Client
+      chain.add Sidekiq::Antidote::Middlewares::Client, tracker
     end
 
     config.server_middleware do |chain|
-      chain.add Sidekiq::Antidote::Middlewares::Server
+      chain.add Sidekiq::Antidote::Middlewares::Server, tracker
     end
   end
 end

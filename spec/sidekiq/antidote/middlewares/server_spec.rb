@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Sidekiq::Antidote::Middlewares::Server do
-  subject(:middleware) { described_class.new }
+  subject(:middleware) { described_class.new Sidekiq::Antidote::Metrics::Tracker.new }
 
   describe "#call" do
     let(:job_instance) { AntidoteTestJob.new }
