@@ -94,6 +94,10 @@ module Sidekiq
         nil
       end
 
+      def tracker
+        @tracker ||= Sidekiq::Antidote::Metrics::Tracker.new
+      end
+
       private
 
       def reinit_remedy
@@ -103,26 +107,24 @@ module Sidekiq
     end
   end
 
-  tracker = Sidekiq::Antidote::Metrics::Tracker.new
-
   # TODO: How to test both configure_{client,server}?
   configure_client do |config|
     config.client_middleware do |chain|
-      chain.add Sidekiq::Antidote::Middlewares::Client, tracker
+      chain.add Sidekiq::Antidote::Middlewares::Client, Antidote.tracker
     end
   end
 
   configure_server do |config|
     config.on(:startup)  { Antidote.startup }
     config.on(:shutdown) { Antidote.shutdown }
-    config.on(:beat) { tracker.flush }
+    config.on(:beat) { Antidote.tracker.flush }
 
     config.client_middleware do |chain|
-      chain.add Sidekiq::Antidote::Middlewares::Client, tracker
+      chain.add Sidekiq::Antidote::Middlewares::Client, Antidote.tracker
     end
 
     config.server_middleware do |chain|
-      chain.add Sidekiq::Antidote::Middlewares::Server, tracker
+      chain.add Sidekiq::Antidote::Middlewares::Server, Antidote.tracker
     end
   end
 end

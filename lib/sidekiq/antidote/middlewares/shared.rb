@@ -18,7 +18,7 @@ module Sidekiq
           Antidote.log(:warn) { "I've got a poison! -- #{job_record.display_class}" }
           Antidote.log(:warn) { "I've got a remedy! -- #{inhibitor}" }
 
-          tracker.track(inhibitor.treatment, job_record.class)
+          tracker.track(inhibitor.treatment, job_record.klass)
           apply_treatment(inhibitor, job_record, queue_name)
 
           true

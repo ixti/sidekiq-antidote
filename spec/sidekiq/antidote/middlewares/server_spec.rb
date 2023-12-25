@@ -1,7 +1,13 @@
 # frozen_string_literal: true
 
 RSpec.describe Sidekiq::Antidote::Middlewares::Server do
-  subject(:middleware) { described_class.new Sidekiq::Antidote::Metrics::Tracker.new }
+  subject(:middleware) { described_class.new tracker }
+
+  let(:tracker) { Sidekiq::Antidote::Metrics::Tracker.new }
+
+  before do
+    allow(tracker).to receive(:track).and_call_original
+  end
 
   describe "#call" do
     let(:job_instance) { AntidoteTestJob.new }
@@ -29,6 +35,15 @@ RSpec.describe Sidekiq::Antidote::Middlewares::Server do
         expect { |b| middleware.call(job_instance, job_message, Sidekiq.redis_pool, &b) }
           .to keep_unchanged(Sidekiq::DeadSet.new, :size)
       end
+
+      it "tracks the inhibition" do
+        middleware.call(job_instance, job_message, Sidekiq.redis_pool)
+
+        expect(tracker).to have_received(:track).with(
+          "skip",
+          "AntidoteTestJob"
+        )
+      end
     end
 
     context "when job matches <kill> inhibitor" do
@@ -47,6 +62,15 @@ RSpec.describe Sidekiq::Antidote::Middlewares::Server do
       it "delivers job to morgue" do
         expect { |b| middleware.call(job_instance, job_message, Sidekiq.redis_pool, &b) }
           .to change(Sidekiq::DeadSet.new, :size)
+      end
+
+      it "tracks the inhibition" do
+        middleware.call(job_instance, job_message, Sidekiq.redis_pool)
+
+        expect(tracker).to have_received(:track).with(
+          "kill",
+          "AntidoteTestJob"
+        )
       end
     end
   end
