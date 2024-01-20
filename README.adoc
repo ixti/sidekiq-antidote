@@ -133,6 +133,7 @@ This library aims to support and is tested against:
 ** MRI 3.0.x
 ** MRI 3.1.x
 ** MRI 3.2.x
+** MRI 3.3.x
 * https://github.com/sidekiq/sidekiq[Sidekiq]
 ** 7.2.x
 * https://redis.io[Redis]
