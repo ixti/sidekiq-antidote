@@ -1,0 +1,3 @@
+# https://github.com/rubocop/rubocop-capybara/pull/99
+Capybara/ClickLinkOrButtonStyle:
+  Enabled: false

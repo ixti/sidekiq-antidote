@@ -5,6 +5,7 @@ require:
   - rubocop-rspec
 
 inherit_from:
+  - rubocop/capybara.yml
   - rubocop/layout.yml
   - rubocop/lint.yml
   - rubocop/metrics.yml
