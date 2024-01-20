@@ -52,6 +52,41 @@ require "sidekiq/web"
 require "sidekiq/antidote/web"
 ----
 
+=== Middleware(s)
+
+`Sidekiq::Antidote` relies on following bundled middlewares:
+
+* `Sidekiq::Antidote::Middlewares::Client`
+* `Sidekiq::Antidote::Middlewares::Server`
+
+The middleware is automatically injected when you require `sidekiq/antidote`.
+In rare cases, when this causes an issue, you can change middleware order manually:
+
+[source,ruby]
+----
+Sidekiq.configure_client do |config|
+  # ...
+
+  config.client_middleware do |chain|
+    chain.prepend(Sidekiq::Antidote::Middlewares::Client)
+  end
+end
+
+Sidekiq.configure_server do |config|
+  # ...
+
+  config.client_middleware do |chain|
+    chain.prepend(Sidekiq::Antidote::Middlewares::Client)
+  end
+
+  config.server_middleware do |chain|
+    chain.prepend(Sidekiq::Antidote::Middlewares::Server)
+  end
+end
+----
+
+See: https://github.com/sidekiq/sidekiq/blob/main/lib/sidekiq/middleware/chain.rb
+
 
 == Inhibitors
 
