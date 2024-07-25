@@ -136,6 +136,7 @@ This library aims to support and is tested against:
 ** MRI 3.3.x
 * https://github.com/sidekiq/sidekiq[Sidekiq]
 ** 7.2.x
+** 7.3.x
 * https://redis.io[Redis]
 ** 6.2.x
 ** 7.0.x
