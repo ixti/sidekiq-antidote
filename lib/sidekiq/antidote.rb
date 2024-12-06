@@ -9,6 +9,7 @@ require_relative "./antidote/middlewares/client"
 require_relative "./antidote/middlewares/server"
 require_relative "./antidote/remedy"
 require_relative "./antidote/repository"
+require_relative "./antidote/suspension_group"
 require_relative "./antidote/version"
 
 module Sidekiq

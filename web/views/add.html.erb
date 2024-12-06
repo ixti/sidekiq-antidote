@@ -23,6 +23,12 @@
           kill <em class="text-muted">(send to the dead set instead of enqueueing and/or performing)</em>
         </label>
       </div>
+      <div class="radio col-sm-offset-2 col-sm-10">
+        <label>
+          <input id="antidote-inhibitor-treatment-suspend" type="radio" name="treatment" value="suspend" <%= "checked" if "suspend" == @treatment %>>
+          suspend <em class="text-muted">(hold off enqueue and/or perform)</em>
+        </label>
+      </div>
     </div>
     <div class="form-group <%= "has-error" if @class_qualifier_error %>">
       <label class="col-sm-2 control-label"><%= t("antidote.class_qualifier") %></label>

@@ -13,6 +13,7 @@ RSpec.describe Sidekiq::Antidote::Repository do
     before do
       redis_hset("123", Sidekiq.dump_json(%w[kill A]))
       redis_hset("456", Sidekiq.dump_json(%w[skip B]))
+      redis_hset("789", Sidekiq.dump_json(%w[suspend C]))
       redis_hset("999", "broken")
     end
 
@@ -21,7 +22,8 @@ RSpec.describe Sidekiq::Antidote::Repository do
         change { yielded_results }.to(
           contain_exactly(
             Sidekiq::Antidote::Inhibitor.new(id: "123", treatment: "kill", class_qualifier: "A"),
-            Sidekiq::Antidote::Inhibitor.new(id: "456", treatment: "skip", class_qualifier: "B")
+            Sidekiq::Antidote::Inhibitor.new(id: "456", treatment: "skip", class_qualifier: "B"),
+            Sidekiq::Antidote::Inhibitor.new(id: "789", treatment: "suspend", class_qualifier: "C")
           )
         )
       )
@@ -31,7 +33,8 @@ RSpec.describe Sidekiq::Antidote::Repository do
       expect { subject }.to(
         change { redis_hgetall }.to({
           "123" => Sidekiq.dump_json(%w[kill A]),
-          "456" => Sidekiq.dump_json(%w[skip B])
+          "456" => Sidekiq.dump_json(%w[skip B]),
+          "789" => Sidekiq.dump_json(%w[suspend C])
         })
       )
     end
@@ -46,7 +49,8 @@ RSpec.describe Sidekiq::Antidote::Repository do
       it "returns each valid inhibitor" do
         expect(subject).to contain_exactly(
           Sidekiq::Antidote::Inhibitor.new(id: "123", treatment: "kill", class_qualifier: "A"),
-          Sidekiq::Antidote::Inhibitor.new(id: "456", treatment: "skip", class_qualifier: "B")
+          Sidekiq::Antidote::Inhibitor.new(id: "456", treatment: "skip", class_qualifier: "B"),
+          Sidekiq::Antidote::Inhibitor.new(id: "789", treatment: "suspend", class_qualifier: "C")
         )
       end
 
@@ -54,7 +58,8 @@ RSpec.describe Sidekiq::Antidote::Repository do
         expect { subject.to_a }.to(
           change { redis_hgetall }.to({
             "123" => Sidekiq.dump_json(%w[kill A]),
-            "456" => Sidekiq.dump_json(%w[skip B])
+            "456" => Sidekiq.dump_json(%w[skip B]),
+            "789" => Sidekiq.dump_json(%w[suspend C])
           })
         )
       end
