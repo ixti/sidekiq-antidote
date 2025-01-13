@@ -134,6 +134,7 @@ This library aims to support and is tested against:
 ** MRI 3.1.x
 ** MRI 3.2.x
 ** MRI 3.3.x
+** MRI 3.4.x
 * https://github.com/sidekiq/sidekiq[Sidekiq]
 ** 7.2.x
 ** 7.3.x
