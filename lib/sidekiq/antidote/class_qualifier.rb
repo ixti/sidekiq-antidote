@@ -36,11 +36,6 @@ module Sidekiq
       # @return [Regexp]
       attr_reader :regexp
 
-      # @!method match?(job_class)
-      #   @param job_class [String]
-      #   @return [Boolean]
-      def_delegator :regexp, :match?
-
       # @param pattern [#to_s]
       def initialize(pattern)
         @pattern = pattern.to_s.strip.freeze
@@ -49,6 +44,12 @@ module Sidekiq
         @regexp = build_regexp(@pattern)
 
         freeze
+      end
+
+      # @param job_class [String, Class]
+      # @return [Boolean]
+      def match?(job_class)
+        regexp.match?(job_class.to_s)
       end
 
       # @param other [Object]
