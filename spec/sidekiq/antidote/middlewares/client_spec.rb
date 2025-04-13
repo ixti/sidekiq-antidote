@@ -49,5 +49,31 @@ RSpec.describe Sidekiq::Antidote::Middlewares::Client do
           .to change(Sidekiq::DeadSet.new, :size)
       end
     end
+
+    context "when job matches <suspend> inhibitor" do
+      before do
+        allow(SecureRandom).to receive(:hex).and_return("group1")
+
+        Sidekiq::Antidote.add(treatment: "suspend", class_qualifier: "**TestJob")
+        Sidekiq::Antidote.configure { |c| c.refresh_rate = 0.1 }
+        Sidekiq::Antidote.startup
+        sleep 0.1
+      end
+
+      it "terminates chain execution" do
+        expect { |b| middleware.call(job_class, job_message, "default", Sidekiq.redis_pool, &b) }
+          .not_to yield_control
+      end
+
+      it "does not deliver job to morgue" do
+        expect { |b| middleware.call(job_class, job_message, "default", Sidekiq.redis_pool, &b) }
+          .to keep_unchanged(Sidekiq::DeadSet.new, :size)
+      end
+
+      it "stores job in suspend_group set" do
+        expect { |b| middleware.call(job_class, job_message, "default", Sidekiq.redis_pool, &b) }
+          .to change { Sidekiq::Antidote::SuspensionGroup.new(name: "group1").size }.by(1)
+      end
+    end
   end
 end
