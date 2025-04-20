@@ -27,6 +27,14 @@ RSpec.describe Sidekiq::Antidote do
     expect(described_class).to have_received(:shutdown)
   end
 
+  it "registers the tracker" do
+    allow(described_class.tracker).to receive(:flush)
+
+    Sidekiq.default_configuration.default_capsule.fire_event(:beat)
+
+    expect(described_class.tracker).to have_received(:flush)
+  end
+
   describe ".add" do
     before { allow(SecureRandom).to receive(:hex).and_return("123") }
 
