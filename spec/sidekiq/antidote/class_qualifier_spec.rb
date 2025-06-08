@@ -78,52 +78,52 @@ RSpec.describe Sidekiq::Antidote::ClassQualifier do
       end
     end
 
-    include_examples "pattern matching",
+    it_behaves_like "pattern matching",
       pattern:   "A::B::C",
       works_for: %w[A::B::C],
       fails_for: %w[A::B::C::D A::B::CJob A::B::C#method_name]
 
-    include_examples "pattern matching",
+    it_behaves_like "pattern matching",
       pattern:   "A::*::C",
       works_for: %w[A::::C A::B::C A::X::C],
       fails_for: %w[A::*::C A::B::C::D A::B::CJob A::B::C#method_name]
 
-    include_examples "pattern matching",
+    it_behaves_like "pattern matching",
       pattern:   "A::B::*",
       works_for: %w[A::B:: A::B::C A::B::CJob],
       fails_for: %w[A::B::* A::B::C::D A::B::C#method_name]
 
-    include_examples "pattern matching",
+    it_behaves_like "pattern matching",
       pattern:   "A::B::*Job#method_name",
       works_for: %w[A::B::Job#method_name A::B::CJob#method_name],
       fails_for: %w[A::B::*Job#method_name A::B::C::DreamJob#method_name]
 
-    include_examples "pattern matching",
+    it_behaves_like "pattern matching",
       pattern:   "A::**::C",
       works_for: %w[A::::C A::B::C A::B::B::C],
       fails_for: %w[A::**::C A::B::C::D A::B::C#method_name]
 
-    include_examples "pattern matching",
+    it_behaves_like "pattern matching",
       pattern:   "A::B::**",
       works_for: %w[A::B:: A::B::C A::B::CJob A::B::C::D A::B::C#method_name],
       fails_for: %w[A::B::**]
 
-    include_examples "pattern matching",
+    it_behaves_like "pattern matching",
       pattern:   "A**::Job",
       works_for: %w[A::Job A::B::Job],
       fails_for: %w[A**::Job]
 
-    include_examples "pattern matching",
+    it_behaves_like "pattern matching",
       pattern:   "A::{B,C}::{D}::E",
       works_for: %w[A::B::D::E A::C::D::E],
       fails_for: %w[A::B::D A::B,C::D::E]
 
-    include_examples "pattern matching",
+    it_behaves_like "pattern matching",
       pattern:   "*",
       works_for: %w[A],
       fails_for: %w[A::B A#method_name]
 
-    include_examples "pattern matching",
+    it_behaves_like "pattern matching",
       pattern:   "**",
       works_for: %w[A A::B A::B::C A#method_name A::B#method_name]
   end
