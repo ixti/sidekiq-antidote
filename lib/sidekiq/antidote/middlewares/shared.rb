@@ -10,7 +10,7 @@ module Sidekiq
 
         # @return [true] if message was inhibited
         # @return [false] otherwise
-        def inhibit(message, queue_name)
+        def inhibit(message, queue_name) # rubocop:disable Naming/PredicateMethod
           job_record = Sidekiq::JobRecord.new(message)
           inhibitor  = Antidote.remedy_for(job_record)
           return false unless inhibitor

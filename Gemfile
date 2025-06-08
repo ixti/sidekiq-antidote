@@ -20,11 +20,11 @@ group :test do
   gem "simplecov"
   gem "simplecov-cobertura"
 
-  gem "rubocop", require: false
-  gem "rubocop-capybara", require: false
+  gem "rubocop",             require: false
+  gem "rubocop-capybara",    require: false
   gem "rubocop-performance", require: false
-  gem "rubocop-rake", require: false
-  gem "rubocop-rspec", require: false
+  gem "rubocop-rake",        require: false
+  gem "rubocop-rspec",       require: false
 end
 
 group :development, optional: true do

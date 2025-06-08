@@ -1,0 +1,64 @@
+<% style_tag "antidote/css/ext.css" %>
+
+<section>
+  <header>
+    <h1>Antidote › <%= t("antidote.add") %></h1>
+  </header>
+
+  <% @errors&.each do |message| %>
+    <div class="alert alert-danger"><%= message %></div>
+  <% end %>
+
+  <form id="antidote-inhibitor" class="form-horizontal" action="<%=root_path %>antidote/add" method="post">
+    <%= csrf_tag %>
+
+    <table>
+      <tbody>
+        <tr>
+          <td class="label">
+            <%= t("antidote.treatment") %>
+          </td>
+          <td>
+            <div>
+              <label>
+                <input id="antidote-inhibitor-treatment-skip" type="radio" name="treatment" value="skip" <%= "checked" if "skip" == @treatment %>>
+                <span>skip <em>(don't enqueue and/or perform)</em></span>
+              </label>
+            </div>
+            <div>
+              <label>
+                <input id="antidote-inhibitor-treatment-kill" type="radio" name="treatment" value="kill" <%= "checked" if "kill" == @treatment %>>
+                <span>kill <em>(send to the dead set instead of enqueueing and/or performing)</em></span>
+              </label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="label">
+            <%= t("antidote.class_qualifier") %>
+          </td>
+          <td>
+            <input id="antidote-inhibitor-class-qualifier" type="text" class="form-control" name="class_qualifier" value="<%= @class_qualifier %>" required>
+            <div class="help-block">
+              <strong>Examples:</strong>
+              <ul>
+                <li><code>ExampleJob</code> to match <code>ExampleJob</code> exactly</li>
+                <li><code>Namespaced::ExampleJob</code> to match <code>Namespaced::ExampleJob</code> exactly</li>
+                <li><code>UserMailer#welcome</code> to match <code>welcome</code> method of <code>UserMailer</code></li>
+                <li><code>UserMailer#*</code> to match any method of <code>UserMailer</code></li>
+                <li><code>*Job</code> to match <code>ExampleJob</code>, but not <code>Namespaced::ExampleJob</code></li>
+                <li><code>**Job</code> to match <code>ExampleJob</code>, <code>Namespaced::ExampleJob</code>, etc.</li>
+                <li><code>{A,B,C}Job</code> to match <code>AJob</code>, <code>BJob</code>, or <code>CJob</code></li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+    </table>
+
+    <div class="form-group">
+      <div class="radio col-sm-offset-2 col-sm-10">
+        <input class="btn btn-danger" type="submit" name="add" value="<%= t("antidote.add.submit") %>" data-confirm="<%= t("antidote.add.confirm") %>" />
+      </div>
+    </div>
+  </form>
+</section>

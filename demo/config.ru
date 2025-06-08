@@ -2,6 +2,7 @@
 
 require_relative "./app"
 
+require "rack/session"
 require "securerandom"
 require "sidekiq/web"
 require "sidekiq/antidote/web"
